@@ -394,8 +394,8 @@ void CheckExitConditions()
       int idx1 = -1, idx2 = -1;
       for(int j = 0; j < g_symbolCount; j++)
       {
-         if(g_symbols[j] == trade.symbol1) idx1 = j;
-         if(g_symbols[j] == trade.symbol2) idx2 = j;
+         if(g_symbols[j] == trade->symbol1) idx1 = j;
+         if(g_symbols[j] == trade->symbol2) idx2 = j;
       }
       
       if(idx1 < 0 || idx2 < 0)
@@ -408,16 +408,16 @@ void CheckExitConditions()
       
       // Calculate entry value for profit percentage
       double entryValue = 0.0;
-      if(PositionSelectByTicket(trade.ticket1))
+      if(PositionSelectByTicket(trade->ticket1))
          entryValue += PositionGetDouble(POSITION_VOLUME) * 
-                       SymbolInfoDouble(trade.symbol1, SYMBOL_TRADE_CONTRACT_SIZE) *
+                       SymbolInfoDouble(trade->symbol1, SYMBOL_TRADE_CONTRACT_SIZE) *
                        PositionGetDouble(POSITION_PRICE_OPEN);
       
       // Check exit conditions
       ENUM_EXIT_REASON exitReason = g_exitManager.ShouldExitTrade(
-         currentZScore, trade.entryZScore,
-         currentCorr, trade.entryCorr,
-         trade.openTime, currentProfit, entryValue
+         currentZScore, trade->entryZScore,
+         currentCorr, trade->entryCorr,
+         trade->openTime, currentProfit, entryValue
       );
       
       // Check regime change if enabled
@@ -429,9 +429,9 @@ void CheckExitConditions()
       if(exitReason != EXIT_NONE)
       {
          Print("=== CLOSING PAIRS TRADE ===");
-         Print("Pair: ", trade.symbol1, " / ", trade.symbol2);
+         Print("Pair: ", trade->symbol1, " / ", trade->symbol2);
          Print("Reason: ", g_exitManager.GetExitReasonString(exitReason));
-         Print("Entry Z-Score: ", DoubleToString(trade.entryZScore, 3));
+         Print("Entry Z-Score: ", DoubleToString(trade->entryZScore, 3));
          Print("Current Z-Score: ", DoubleToString(currentZScore, 3));
          Print("Profit: ", DoubleToString(currentProfit, 2));
          

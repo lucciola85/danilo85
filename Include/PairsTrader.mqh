@@ -243,12 +243,12 @@ bool CPairsTrader::ClosePairsTrade(int tradeIndex)
    SPairsTrade* trade = &m_activeTrades[tradeIndex];
    
    // Close both legs
-   bool success1 = ClosePosition(trade.ticket1);
-   bool success2 = ClosePosition(trade.ticket2);
+   bool success1 = ClosePosition(trade->ticket1);
+   bool success2 = ClosePosition(trade->ticket2);
    
    if(success1 && success2)
    {
-      Print("Pairs trade closed: ", trade.symbol1, " / ", trade.symbol2);
+      Print("Pairs trade closed: ", trade->symbol1, " / ", trade->symbol2);
       
       // Remove from active trades array
       for(int i = tradeIndex; i < m_tradeCount - 1; i++)
@@ -310,8 +310,8 @@ bool CPairsTrader::UpdateTrades()
    {
       SPairsTrade* trade = &m_activeTrades[i];
       
-      bool exists1 = PositionSelectByTicket(trade.ticket1);
-      bool exists2 = PositionSelectByTicket(trade.ticket2);
+      bool exists1 = PositionSelectByTicket(trade->ticket1);
+      bool exists2 = PositionSelectByTicket(trade->ticket2);
       
       // If either leg is closed, close the other and remove the pairs trade
       if(!exists1 || !exists2)
@@ -319,9 +319,9 @@ bool CPairsTrader::UpdateTrades()
          Print("Warning: Incomplete pairs trade detected. Cleaning up...");
          
          if(exists1)
-            ClosePosition(trade.ticket1);
+            ClosePosition(trade->ticket1);
          if(exists2)
-            ClosePosition(trade.ticket2);
+            ClosePosition(trade->ticket2);
          
          // Remove from array
          for(int j = i; j < m_tradeCount - 1; j++)
@@ -387,11 +387,11 @@ double CPairsTrader::GetPairsProfit(int tradeIndex)
    double profit = 0.0;
    
    // Get profit from first leg
-   if(PositionSelectByTicket(trade.ticket1))
+   if(PositionSelectByTicket(trade->ticket1))
       profit += PositionGetDouble(POSITION_PROFIT);
    
    // Get profit from second leg
-   if(PositionSelectByTicket(trade.ticket2))
+   if(PositionSelectByTicket(trade->ticket2))
       profit += PositionGetDouble(POSITION_PROFIT);
    
    return profit;

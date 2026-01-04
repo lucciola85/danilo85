@@ -317,11 +317,14 @@ bool CCorrelationMatrix::Update()
                // Exponential moving average for mean and variance
                double alpha = 2.0 / (m_zscorePeriod + 1.0);
                double oldMean = m_correlationMean[i][j];
+               double oldVariance = m_correlationStdDev[i][j] * m_correlationStdDev[i][j];
+               
+               // Update mean
                m_correlationMean[i][j] = alpha * corr + (1 - alpha) * oldMean;
                
-               double variance = (1 - alpha) * (m_correlationStdDev[i][j] * m_correlationStdDev[i][j] + 
-                                alpha * (corr - oldMean) * (corr - m_correlationMean[i][j]));
-               m_correlationStdDev[i][j] = MathSqrt(variance);
+               // Update variance using Welford's online algorithm adapted for EMA
+               double variance = (1 - alpha) * oldVariance + alpha * (corr - oldMean) * (corr - m_correlationMean[i][j]);
+               m_correlationStdDev[i][j] = MathSqrt(MathAbs(variance)); // Use MathAbs to handle rounding errors
             }
          }
       }
